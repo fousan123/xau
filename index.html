@@ -66,6 +66,11 @@
       font-size: 1.1rem;
       font-weight: 500;
     }
+    .note {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.2rem;
+    }
   </style>
 </head>
 <body>
@@ -77,8 +82,10 @@
     <label for="risk">Risk % per Trade</label>
     <input type="number" id="risk" placeholder="e.g. 1">
 
-    <label for="stop">Stop-Loss (Pips)</label>
-    <input type="number" id="stop" placeholder="e.g. 100">
+    <label for="stop">Stop-Loss Distance (in Dollars)</label>
+    <input type="number" id="stop" placeholder="e.g. 10">
+    <div class="note">Not the amount you're risking — enter the price distance between your entry and stop-loss. E.g., if your stop-loss is $10 below entry, type 10.</div>
+    <div class="note">💡 In gold (XAUUSD), a $1 price movement equals 100 pips.</div>
 
     <button onclick="calculate()">Calculate Lot Size</button>
 
@@ -89,18 +96,20 @@
     function calculate() {
       const account = parseFloat(document.getElementById('account').value);
       const riskPercent = parseFloat(document.getElementById('risk').value);
-      const stopLossPips = parseFloat(document.getElementById('stop').value);
+      const stopLossDollars = parseFloat(document.getElementById('stop').value);
 
-      if (isNaN(account) || isNaN(riskPercent) || isNaN(stopLossPips) || stopLossPips <= 0) {
+      if (isNaN(account) || isNaN(riskPercent) || isNaN(stopLossDollars) || stopLossDollars <= 0) {
         document.getElementById('output').innerText = 'Please enter valid values in all fields.';
         return;
       }
 
+      const stopLossPips = stopLossDollars * 100; // Convert $ stop loss to pips (1$ = 100 pips in gold)
       const riskAmount = account * (riskPercent / 100);
-      const lotSize = riskAmount / (stopLossPips * 1); // 1 pip in gold = $1 per lot
+      const lotSize = riskAmount / stopLossPips; // 1 pip = $1 per lot in gold
 
       document.getElementById('output').innerText = `Recommended Lot Size: ${lotSize.toFixed(3)} lots`;
     }
   </script>
 </body>
 </html>
+
